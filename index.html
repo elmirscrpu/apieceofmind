@@ -851,13 +851,11 @@
             const progressBar = document.getElementById('progress-bar');
             const bgGlowTracker = document.getElementById('bg-glow-tracker');
 
-            // Dismiss Loader Screen when assets completely binded
-            window.addEventListener('load', () => {
-                setTimeout(() => {
-                    loadingScreen.style.opacity = '0';
-                    setTimeout(() => loadingScreen.style.display = 'none', 800);
-                }, 500);
-            });
+            / Hilangkan loading screen secara instan (0.5 detik setelah halaman siap)
+            setTimeout(() => {
+                loadingScreen.style.opacity = '0';
+                setTimeout(() => loadingScreen.style.display = 'none', 800);
+            }, 500);
 
             // Adaptive Mouse Tracker Coordinate Sync
             window.addEventListener('mousemove', (e) => {
