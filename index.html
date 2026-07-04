@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Untuk Kamu ❤️</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #ffe5ec, #ffc2d1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.85);
+            padding: 30px 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            width: 100%;
+            max-width: 350px; /* Pas untuk ukuran screen HP */
+            transition: all 0.3s ease;
+        }
+
+        .gif-container img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            color: #ff4d6d;
+            margin-bottom: 15px;
+        }
+
+        p {
+            font-size: 1rem;
+            color: #4a4a4a;
+            margin-bottom: 25px;
+            line-height: 1.4;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: space-around;
+            position: relative;
+            height: 50px;
+        }
+
+        button {
+            padding: 10px 25px;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        #btn-yes {
+            background-color: #ff4d6d;
+            color: white;
+            box-shadow: 0 4px 10px rgba(255, 77, 109, 0.3);
+        }
+
+        #btn-no {
+            background-color: #6c757d;
+            color: white;
+            position: absolute;
+            right: 20px; /* Posisi awal */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="main-card">
+        <div class="gif-container">
+            <img id="display-gif" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3N2N3Vpa3FpNzZ5b3N6bW1wYjNreXF5cHZidm9mOHZpYm9scW84ZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3R9L2duaW1hdGVkL2p1bXBpbmctYmVhci1jdXRlLWJlYXIuanBn/giphy.gif" alt="Cute Bear">
+        </div>
+        <h1 id="question">Aku mau ngomong sesuatu...</h1>
+        <p id="message">Kamu mau gak jadi orang yang nemenin hari-hari aku terus? 🥺</p>
+
+        <div class="btn-group">
+            <button id="btn-yes" onclick="accepted()">Mau!</button>
+            <button id="btn-no" ontouchstart="moveButton()" onmouseover="moveButton()">Nggak</button>
+        </div>
+    </div>
+
+    <script>
+        const btnNo = document.getElementById('btn-no');
+        const question = document.getElementById('question');
+        const message = document.getElementById('message');
+        const gif = document.getElementById('display-gif');
+        const btnYes = document.getElementById('btn-yes');
+
+        // Fungsi untuk mindahin tombol "Nggak" saat disentuh/di-hover
+        function moveButton() {
+            // Menghitung batas area aman di dalam screen HP
+            const maxWidth = window.innerWidth - btnNo.offsetWidth - 40;
+            const maxHeight = window.innerHeight - btnNo.offsetHeight - 40;
+
+            // Generate posisi acak
+            const randomX = Math.floor(Math.random() * maxWidth);
+            const randomY = Math.floor(Math.random() * maxHeight);
+
+            // Ubah posisi tombol jadi absolut ke seluruh layar
+            btnNo.style.position = 'fixed';
+            btnNo.style.left = randomX + 'px';
+            btnNo.style.top = randomY + 'px';
+        }
+
+        // Fungsi ketika si dia klik "Mau!"
+        function accepted() {
+            question.innerHTML = "Yeayyy! ❤️";
+            message.innerHTML = "Makasih ya udah mau! Kabarin aku lewat WhatsApp sekarang juga! 🥰";
+            
+            // Ganti GIF jadi yang lebih bahagia
+            gif.src = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMms1em1wY3RxbWtzOHdndmptOHZidm9mOHZpYm9scW84ZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3R9L2duaW1hdGVkL2xvdmUtYmVhci1jdXRlLWJlYXIuanBn/giphy.gif";
+            
+            // Sembunyikan tombol "Nggak" dan ubah tombol "Mau!" jadi tombol WA
+            btnNo.style.display = 'none';
+            btnYes.innerHTML = "Kirim Pesan Ke WA";
+            btnYes.setAttribute('onclick', 'sendWhatsApp()');
+        }
+
+        // Fungsi buat langsung nge-link ke WhatsApp kamu
+        function sendWhatsApp() {
+            const nomorWA = "628xxxxxxxxxx"; // GANTI DENGAN NOMOR WA KAMU (Awalin dengan 62)
+            const teks = encodeURIComponent("Aku mau kok jadi pacar kamu! 🥰❤️");
+            window.location.href = `https://wa.me/${nomorWA}?text=${teks}`;
+        }
+    </script>
+</body>
+</html>
