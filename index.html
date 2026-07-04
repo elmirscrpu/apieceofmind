@@ -3,147 +3,1317 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Untuk Kamu ❤️</title>
+    <title>Dunia Bucin Premium | Perjalanan Cinta Abadi</title>
+    
     <style>
+        /* ==========================================================================
+           1. CORE DESIGN TOKENS & RESET
+           ========================================================================== */
+        :root {
+            --bg-dark: #07040d;
+            --bg-dark-purple: #120924;
+            --primary: #ff4d6d;
+            --primary-glow: rgba(255, 77, 109, 0.6);
+            --accent: #ff758f;
+            --text-light: #ffffff;
+            --text-muted: #a09cb0;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-hover-bg: rgba(255, 77, 109, 0.08);
+            --glass-hover-border: rgba(255, 77, 109, 0.3);
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Poppins', sans-serif;
+            scroll-behavior: smooth;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background: linear-gradient(135deg, #ffe5ec, #ffc2d1);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background-color: var(--bg-dark);
+            background-image: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-dark-purple) 100%);
+            color: var(--text-light);
+            overflow-x: hidden;
             min-height: 100vh;
-            overflow: hidden;
-            text-align: center;
-            padding: 20px;
+            position: relative;
         }
 
-        .container {
-            background: rgba(255, 255, 255, 0.85);
-            padding: 30px 20px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            width: 100%;
-            max-width: 350px; /* Pas untuk ukuran screen HP */
-            transition: all 0.3s ease;
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(to bottom, var(--accent), var(--primary));
+            border-radius: 4px;
         }
 
-        .gif-container img {
-            width: 150px;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 50%;
-            margin-bottom: 20px;
-        }
-
-        h1 {
-            font-size: 1.5rem;
-            color: #ff4d6d;
-            margin-bottom: 15px;
+        /* Global Typography Rules */
+        h1, h2, h3 {
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(45deg, #fff, var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         p {
-            font-size: 1rem;
-            color: #4a4a4a;
-            margin-bottom: 25px;
-            line-height: 1.4;
+            color: var(--text-muted);
+            line-height: 1.6;
         }
 
-        .btn-group {
+        /* ==========================================================================
+           2. GLOBAL LAYOUT & MICRO-INTERACTIONS
+           ========================================================================== */
+        
+        /* Loading Screen */
+        #loading-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-dark);
+            z-index: 9999;
             display: flex;
-            justify-content: space-around;
-            position: relative;
-            height: 50px;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+        .loader-heart {
+            font-size: 3.5rem;
+            animation: pulse-heart 1.2s infinite alternate cubic-bezier(0.455, 0.03, 0.515, 0.955);
+            filter: drop-shadow(0 0 15px var(--primary));
+        }
+        .loader-text {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--accent);
+            animation: pulse-text 1.5s infinite ease-in-out;
         }
 
-        button {
-            padding: 10px 25px;
-            font-size: 1rem;
-            font-weight: bold;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: transform 0.2s;
+        /* Scroll Progress Bar */
+        #progress-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 4px;
+            z-index: 9998;
+            background: rgba(0,0,0,0.2);
+        }
+        #progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to right, var(--primary), #ff85a2);
+            box-shadow: 0 0 10px var(--primary);
         }
 
-        #btn-yes {
-            background-color: #ff4d6d;
-            color: white;
-            box-shadow: 0 4px 10px rgba(255, 77, 109, 0.3);
+        /* Mouse Glow Overlay Effect */
+        #bg-glow-tracker {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 77, 109, 0.04), transparent 40%);
         }
 
-        #btn-no {
-            background-color: #6c757d;
-            color: white;
+        /* Floating Background Particles (Hearts) */
+        .ambient-particles {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 2;
+            overflow: hidden;
+        }
+        .ambient-heart {
             position: absolute;
-            right: 20px; /* Posisi awal */
+            color: rgba(255, 77, 109, 0.15);
+            font-size: var(--size);
+            left: var(--left);
+            animation: float-up var(--delay) linear infinite;
+            bottom: -50px;
+        }
+
+        /* Floating Controls (Music + Audio Placeholder Context) */
+        .floating-controls {
+            position: fixed;
+            bottom: 25px; right: 25px;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .control-btn {
+            width: 50px; height: 50px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(10px);
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex; justify-content: center; align-items: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        .control-btn:hover {
+            transform: scale(1.1);
+            background: var(--primary);
+            border-color: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        /* Mouse Trail Entities */
+        .mouse-trail-heart {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            color: var(--accent);
+            font-size: 14px;
+            animation: trail-fade 0.8s linear forwards;
+        }
+
+        /* Base Component Card Design (Glassmorphism) */
+        .glass-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .glass-card:hover {
+            background: var(--glass-hover-bg);
+            border-color: var(--glass-hover-border);
+            box-shadow: 0 20px 40px rgba(255, 77, 109, 0.1);
+            transform: translateY(-5px);
+        }
+
+        /* Global Button Ripple Style */
+        .btn-premium {
+            position: relative;
+            overflow: hidden;
+            padding: 16px 36px;
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: white;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            border: none; border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(255, 77, 109, 0.4);
+            transition: all 0.3s ease;
+            z-index: 1;
+        }
+        .btn-premium:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 77, 109, 0.6);
+        }
+        .btn-premium .ripple {
+            position: absolute;
+            background: rgba(255,255,255,0.4);
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple-effect 0.6s linear;
+            pointer-events: none;
+        }
+
+        /* ==========================================================================
+           3. SECTIONS STYLING ARCHITECTURE
+           ========================================================================== */
+        section {
+            min-height: 100vh;
+            width: 100%;
+            padding: 80px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 3;
+        }
+
+        /* Section Title Rules */
+        .section-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        .section-header h2 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+        .section-header p {
+            font-size: 1rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        /* 1. Hero Section */
+        #section-hero {
+            background: radial-gradient(circle at center, rgba(18, 9, 36, 0.5) 0%, var(--bg-dark) 100%);
+            flex-direction: column;
+            text-align: center;
+        }
+        .hero-title {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            line-height: 1.2;
+            margin-bottom: 20px;
+            animation: float-slow 4s ease-in-out infinite alternate;
+        }
+        .hero-subtitle {
+            font-size: clamp(1rem, 2vw, 1.4rem);
+            margin-bottom: 40px;
+            max-width: 600px;
+        }
+
+        /* 2. Apa itu Bucin Section */
+        #section-intro .intro-wrapper {
+            max-width: 700px;
+            text-align: center;
+        }
+        .heart-icon-wrapper {
+            font-size: 4rem;
+            margin-bottom: 25px;
+            animation: heart-beat-scale 1.5s infinite;
+            display: inline-block;
+        }
+
+        /* 3. Tingkatan Bucin Timeline Tabs */
+        #section-levels .levels-container {
+            width: 100%; max-width: 900px;
+            display: grid; grid-template-columns: 1fr 2fr; gap: 30px;
+        }
+        .level-tabs {
+            display: flex; flex-direction: column; gap: 15px;
+        }
+        .level-tab-btn {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 20px; border-radius: 16px;
+            color: white; text-align: left; cursor: pointer;
+            transition: all 0.3s; font-weight: 600;
+        }
+        .level-tab-btn.active, .level-tab-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: translateX(10px);
+            box-shadow: 0 5px 15px rgba(255, 77, 109, 0.3);
+        }
+        .level-display-card {
+            display: flex; flex-direction: column; justify-content: center;
+            min-height: 300px;
+        }
+        .level-content-pane {
+            display: none;
+            animation: fadeIn 0.5s ease forwards;
+        }
+        .level-content-pane.active { display: block; }
+        .level-badge {
+            display: inline-block; padding: 6px 14px; background: rgba(255,77,109,0.2);
+            color: var(--accent); border-radius: 20px; font-weight: bold; font-size: 0.8rem;
+            margin-bottom: 15px; border: 1px solid rgba(255,77,109,0.4);
+        }
+
+        /* 4. Quiz Bucin Application Interface */
+        #section-quiz .quiz-box {
+            width: 100%; max-width: 550px;
+            position: relative; overflow: hidden;
+        }
+        .quiz-progress-track {
+            height: 6px; width: 100%; background: rgba(255,255,255,0.05);
+            border-radius: 3px; margin-bottom: 30px; overflow: hidden;
+        }
+        .quiz-progress-fill {
+            height: 100%; width: 0%; background: var(--accent);
+            transition: width 0.4s ease;
+        }
+        .quiz-screen { display: none; }
+        .quiz-screen.active { display: block; animation: fadeIn 0.5s ease; }
+        .quiz-question { font-size: 1.3rem; margin-bottom: 25px; font-weight: 600; line-height: 1.4; color: #fff;}
+        .quiz-options { display: flex; flex-direction: column; gap: 15px; }
+        .option-btn {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--glass-border);
+            padding: 16px 24px; border-radius: 14px; color: var(--text-light);
+            text-align: left; cursor: pointer; font-size: 1rem; transition: all 0.25s ease;
+        }
+        .option-btn:hover {
+            background: rgba(255, 77, 109, 0.1);
+            border-color: var(--accent);
+            transform: translateX(5px);
+        }
+        .quiz-results-pane { text-align: center; }
+        .result-score-title { font-size: 2.2rem; margin: 20px 0 15px 0; color: var(--accent); }
+
+        /* Confetti Overlay System Canvas */
+        #confetti-canvas {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 999; display: none;
+        }
+
+        /* 5. Love Gallery Layout */
+        #section-gallery .gallery-grid {
+            width: 100%; max-width: 1000px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .gallery-item {
+            position: relative; border-radius: 16px; overflow: hidden;
+            aspect-ratio: 4/5; cursor: pointer;
+            border: 1px solid var(--glass-border);
+        }
+        .gallery-item img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .gallery-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to top, rgba(7, 4, 13, 0.9) 10%, rgba(7, 4, 13, 0.2) 100%);
+            display: flex; flex-direction: column; justify-content: flex-end;
+            padding: 25px; opacity: 0; transition: all 0.4s ease;
+        }
+        .gallery-overlay h4 { font-size: 1.2rem; color: #fff; margin-bottom: 5px;}
+        
+        /* Gallery Interactive Hover Rules */
+        .gallery-item:hover img {
+            transform: scale(1.1);
+            filter: blur(4px);
+        }
+        .gallery-item:hover .gallery-overlay {
+            opacity: 1;
+        }
+
+        /* Gallery Fullscreen Modal Lightbox */
+        .lightbox-modal {
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: rgba(7, 4, 13, 0.95); backdrop-filter: blur(15px);
+            z-index: 10000; display: none; justify-content: center; align-items: center;
+            opacity: 0; transition: opacity 0.4s ease; padding: 20px;
+        }
+        .lightbox-modal.active { display: flex; opacity: 1; }
+        .lightbox-content {
+            max-width: 90%; max-height: 80vh; border-radius: 12px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1);
+        }
+        .lightbox-close {
+            position: absolute; top: 30px; right: 30px; font-size: 2rem;
+            color: white; cursor: pointer; background: none; border: none;
+        }
+
+        /* 6. Love Letter Screen Framework */
+        #section-letter .letter-box {
+            width: 100%; max-width: 650px; min-height: 350px;
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .typewriter-container {
+            font-size: 1.15rem; line-height: 1.8; color: #e0dbf0;
+            white-space: pre-wrap; word-wrap: break-word;
+        }
+        .typewriter-cursor {
+            display: inline-block; width: 2px; height: 1.15rem;
+            background-color: var(--accent); margin-left: 3px;
+            animation: blink 0.8s infinite; vertical-align: middle;
+        }
+        .letter-action-area {
+            margin-top: 30px; opacity: 0; transform: translateY(15px);
+            transition: all 0.6s ease; text-align: center;
+        }
+        .letter-action-area.visible { opacity: 1; transform: translateY(0); }
+
+        /* 7. Countdown Interface Module */
+        #section-countdown .countdown-container {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 20px; width: 100%; max-width: 700px;
+        }
+        .countdown-node {
+            text-align: center; padding: 25px 15px; position: relative;
+        }
+        .countdown-digits {
+            font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 800;
+            color: #fff; display: block; margin-bottom: 5px;
+            text-shadow: 0 0 15px var(--primary-glow);
+            animation: pulse-light 2s infinite alternate;
+        }
+        .countdown-label {
+            font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px;
+            color: var(--text-muted);
+        }
+
+        /* 8. Sequential Memories Timeline Layout */
+        #section-memories .memories-timeline {
+            position: relative; width: 100%; max-width: 800px;
+            padding: 40px 0;
+        }
+        #section-memories .memories-timeline::before {
+            content: ''; position: absolute; left: 50%; top: 0;
+            width: 2px; height: 100%; background: linear-gradient(to bottom, transparent, var(--glass-border), var(--primary), var(--glass-border), transparent);
+            transform: translateX(-50%);
+        }
+        .timeline-block {
+            width: 100%; margin-bottom: 60px; display: flex;
+            position: relative;
+        }
+        .timeline-block:nth-child(even) { flex-direction: row-reverse; }
+        .timeline-dot {
+            position: absolute; left: 50%; top: 30px;
+            width: 16px; height: 16px; border-radius: 50%;
+            background: var(--primary); border: 4px solid var(--bg-dark);
+            transform: translateX(-50%); z-index: 5;
+            box-shadow: 0 0 10px var(--primary);
+        }
+        .timeline-card-wrapper { width: 45%; }
+        .timeline-date {
+            display: inline-block; padding: 4px 12px; background: rgba(255,255,255,0.05);
+            border-radius: 20px; font-size: 0.8rem; font-weight: 600; color: var(--accent);
+            margin-bottom: 12px; border: 1px solid var(--glass-border);
+        }
+        .timeline-card h3 { font-size: 1.3rem; margin-bottom: 10px; color: #fff;}
+
+        /* 9. Interactive Clicking Hearts Zone */
+        #section-interactive-hearts {
+            background: linear-gradient(to bottom, transparent, rgba(18,9,36,0.3), transparent);
+            cursor: pointer; text-align: center;
+        }
+        .interactive-zone-notice {
+            pointer-events: none; user-select: none;
+        }
+        .interactive-zone-notice h2 { font-size: 2.2rem; margin-bottom: 15px; }
+        .spawned-heart {
+            position: absolute; transform: translate(-50%, -50%) scale(0);
+            pointer-events: none; z-index: 99; color: var(--primary);
+            font-size: 2rem; filter: drop-shadow(0 0 8px var(--primary-glow));
+            animation: spawn-pop-fade var(--duration, 1s) cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* 10. Ending Destination Layout */
+        #section-ending {
+            text-align: center; flex-direction: column;
+        }
+        .ending-title {
+            font-size: clamp(1.8rem, 4vw, 3rem); line-height: 1.4;
+            max-width: 750px; margin-bottom: 40px;
+        }
+
+        /* ==========================================================================
+           4. PROCEDURAL CUSTOM REVEAL (AOS ENGINE CLONE)
+           ========================================================================== */
+        [data-custom-reveal] {
+            opacity: 0;
+            transition-duration: 1s;
+            transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        [data-custom-reveal="fade-up"] { transform: translateY(40px); }
+        [data-custom-reveal="fade-left"] { transform: translateX(-40px); }
+        [data-custom-reveal="fade-right"] { transform: translateX(40px); }
+        [data-custom-reveal="zoom-in"] { transform: scale(0.85); }
+
+        [data-custom-reveal].reveal-engaged {
+            opacity: 1;
+            transform: translate(0) scale(1);
+        }
+
+        /* ==========================================================================
+           5. KEYFRAMES ANIMATION MANIFEST
+           ========================================================================== */
+        @keyframes pulse-heart {
+            0% { transform: scale(0.9); }
+            100% { transform: scale(1.15); filter: drop-shadow(0 0 25px var(--primary)); }
+        }
+        @keyframes pulse-text {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        @keyframes float-up {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-105vh) rotate(360deg); opacity: 0; }
+        }
+        @keyframes trail-fade {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            100% { transform: translate(-50%, -80%) scale(0.4); opacity: 0; }
+        }
+        @keyframes float-slow {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-15px); }
+        }
+        @keyframes heart-beat-scale {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.1); }
+            40% { transform: scale(1.05); }
+            60% { transform: scale(1.15); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+        @keyframes ripple-effect {
+            to { transform: scale(4); opacity: 0; }
+        }
+        @keyframes spawn-pop-fade {
+            0% { transform: translate(-50%, -50%) scale(0) rotate(var(--rot, 0deg)); opacity: 1; }
+            50% { opacity: 1; }
+            100% { transform: translate(-50%, calc(-50% - var(--drift, 100px))) scale(var(--target-scale, 1.5)) rotate(calc(var(--rot, 0deg) + 20deg)); opacity: 0; }
+        }
+        @keyframes pulse-light {
+            0% { filter: brightness(1); }
+            100% { filter: brightness(1.2); }
+        }
+
+        /* ==========================================================================
+           6. RESPONSIVE BREAKPOINTS (MOBILE MEDIA QUERIES)
+           ========================================================================== */
+        @media (max-width: 768px) {
+            section { padding: 60px 15px; }
+            .section-header h2 { font-size: 2rem; }
+            
+            /* Section 3 Levels Mobile */
+            #section-levels .levels-container { grid-template-columns: 1fr; }
+            .level-tabs { flex-direction: row; overflow-x: auto; padding-bottom: 10px; }
+            .level-tab-btn { white-space: nowrap; padding: 12px 20px; }
+            .level-tab-btn.active { transform: translateY(-5px); }
+            
+            /* Section 7 Countdown Mobile */
+            #section-countdown .countdown-container { grid-template-columns: repeat(2, 1fr); gap: 15px; }
+            
+            /* Section 8 Timeline Mobile */
+            #section-memories .memories-timeline::before { left: 20px; }
+            .timeline-block { flex-direction: row !important; }
+            .timeline-dot { left: 20px; }
+            .timeline-card-wrapper { width: calc(100% - 40px); margin-left: auto; }
         }
     </style>
 </head>
 <body>
 
-    <div class="container" id="main-card">
-        <div class="gif-container">
-            <img id="display-gif" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3N2N3Vpa3FpNzZ5b3N6bW1wYjNreXF5cHZidm9mOHZpYm9scW84ZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3R9L2duaW1hdGVkL2p1bXBpbmctYmVhci1jdXRlLWJlYXIuanBn/giphy.gif" alt="Cute Bear">
-        </div>
-        <h1 id="question">Aku mau ngomong sesuatu...</h1>
-        <p id="message">Kamu mau gak jadi orang yang nemenin hari-hari aku terus? 🥺</p>
-
-        <div class="btn-group">
-            <button id="btn-yes" onclick="accepted()">Mau!</button>
-            <button id="btn-no" ontouchstart="moveButton()" onmouseover="moveButton()">Nggak</button>
-        </div>
+    <div id="loading-screen">
+        <div class="loader-heart">❤️</div>
+        <div class="loader-text">Menyiapkan Ruang Cinta...</div>
     </div>
 
+    <div id="progress-container">
+        <div id="progress-bar"></div>
+    </div>
+
+    <div id="bg-glow-tracker"></div>
+
+    <div class="ambient-particles" id="ambient-particles-container"></div>
+
+    <audio id="bg-music" loop preload="auto">
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="floating-controls">
+        <button class="control-btn" id="music-toggle-btn" aria-label="Toggle Music" title="Play/Pause Music">🎵</button>
+        <button class="control-btn" id="scroll-top-btn" aria-label="Scroll to Top" title="Kembali ke Atas" style="opacity: 0; pointer-events: none;">▲</button>
+    </div>
+
+    <canvas id="confetti-canvas"></canvas>
+
+    <main>
+
+        <section id="section-hero">
+            <h1 class="hero-title">Selamat Datang di<br>Dunia Bucin ❤️</h1>
+            <p class="hero-subtitle">Buka lembaran cerita, uji kadar perasaanmu, dan nikmati perjalanan emosional yang dirancang khusus untuk merayakan arti sebuah ketulusan.</p>
+            <button class="btn-premium" id="hero-start-cta">Mulai Perjalanan</button>
+        </section>
+
+        <section id="section-intro">
+            <div class="intro-wrapper glass-card" data-custom-reveal="fade-up">
+                <div class="heart-icon-wrapper">💖</div>
+                <h2>Mendefinisikan "Bucin"</h2>
+                <p style="margin-top: 15px;">
+                    Lebih dari sekadar singkatan kekinian, menjadi budak cinta melambangkan kerelaan mengutamakan kebahagiaan seseorang di atas ego sendiri. Ini bukan kelemahan—ini adalah ekspresi tertinggi dari dedikasi dan kasih sayang modern yang dikemas dengan ketulusan mutlak tanpa batas.
+                </p>
+            </div>
+        </section>
+
+        <section id="section-levels">
+            <div style="width: 100%; max-width: 900px;">
+                <div class="section-header" data-custom-reveal="fade-up">
+                    <h2>Tingkatan Evolusi Bucin</h2>
+                    <p>Dari sekadar mengagumi diam-diam hingga mencapai level kosmis mengorbankan segalanya.</p>
+                </div>
+                
+                <div class="levels-container">
+                    <div class="level-tabs" data-custom-reveal="fade-left">
+                        <button class="level-tab-btn active" data-target-idx="0">Level 1: Pemula (Simpatisan)</button>
+                        <button class="level-tab-btn" data-target-idx="1">Level 2: Pejuang Notifikasi</button>
+                        <button class="level-tab-btn" data-target-idx="2">Level 3: Penjaga Hati</button>
+                        <button class="level-tab-btn" data-target-idx="3">Level 4: Garis Keras</button>
+                        <button class="level-tab-btn" data-target-idx="4">Level 5: Raja / Ratu Bucin 👑</button>
+                    </div>
+                    
+                    <div class="level-display-card glass-card" data-custom-reveal="fade-right">
+                        <div class="level-content-pane active" id="pane-0">
+                            <span class="level-badge">Tahap Awal</span>
+                            <h3>Simpatisan Pendiam</h3>
+                            <p style="margin-top: 12px;">Kamu mulai tersenyum sendiri membaca ulang log chat lama. Masih gengsi mengakui, tapi diam-diam profil media sosialnya menjadi halaman yang paling sering kamu kunjungi setiap jam.</p>
+                        </div>
+                        <div class="level-content-pane" id="pane-1">
+                            <span class="level-badge">Tahap Menengah</span>
+                            <h3>Pejuang Balasan Kilat</h3>
+                            <p style="margin-top: 12px;">Kecepatan membalas pesanmu mengalahkan kecepatan cahaya. HP selalu digenggam erat, bergetar sedikit langsung refleks membuka layar demi memastikan kabarnya tidak terlewat sedetik pun.</p>
+                        </div>
+                        <div class="level-content-pane" id="pane-2">
+                            <span class="level-badge">Tahap Serius</span>
+                            <h3>Penjaga Prioritas Utama</h3>
+                            <p style="margin-top: 12px;">Agenda nongkrong bersama teman rela digeser demi bisa mengantarnya pergi. Selera musik, bahasa tubuh, hingga kata-kata khasnya mulai menular dan menyatu sempurna ke dalam dirimu.</p>
+                        </div>
+                        <div class="level-content-pane" id="pane-3">
+                            <span class="level-badge">Tahap Ekstrem</span>
+                            <h3>Pakar Pengorbanan Total</h3>
+                            <p style="margin-top: 12px;">Hujan badai di luar jendela terasa seperti rintik gerimis romantis jika tujuannya adalah menjemput dirinya. Logika dikesampingkan, yang penting senyum indahnya tetap terpancar nyata.</p>
+                        </div>
+                        <div class="level-content-pane" id="pane-4">
+                            <span class="level-badge">Kasta Tertinggi</span>
+                            <h3>Penguasa Dinasti Bucin</h3>
+                            <p style="margin-top: 12px;">Kamu telah mencapai pencerahan spiritual cinta tertinggi. Kebahagiaannya adalah poros utama rotasi duniamu. Seluruh keputusan hidupmu mengalir harmonis berpusat pada satu nama.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-quiz">
+            <div class="quiz-box glass-card" data-custom-reveal="zoom-in">
+                <div class="quiz-progress-track">
+                    <div class="quiz-progress-fill" id="quiz-progress-indicator"></div>
+                </div>
+                
+                <div id="quiz-flow-container">
+                    </div>
+            </div>
+        </section>
+
+        <section id="section-gallery">
+            <div style="width: 100%; max-width: 1000px;">
+                <div class="section-header" data-custom-reveal="fade-up">
+                    <h2>Galeri Memori Indah</h2>
+                    <p>Kumpulan fragmen waktu visual yang mengabadikan sisa-sisa kehangatan perjalanan bersama.</p>
+                </div>
+                
+                <div class="gallery-grid" data-custom-reveal="fade-up">
+                    <div class="gallery-item">
+                        <img src="https://picsum.photos/id/1025/500/600" alt="Momen Indah 1">
+                        <div class="gallery-overlay">
+                            <h4>Tawa Pertama</h4>
+                            <p>Sore hari di mana dunia terasa melambat dan hanya menyisakan suara tawamu.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item">
+                        <img src="https://picsum.photos/id/1043/500/600" alt="Momen Indah 2">
+                        <div class="gallery-overlay">
+                            <h4>Langkah Bersama</h4>
+                            <p>Menjelajahi jalanan kota tanpa arah, menemukan kenyamanan dalam genggaman.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item">
+                        <img src="https://picsum.photos/id/1062/500/600" alt="Momen Indah 3">
+                        <div class="gallery-overlay">
+                            <h4>Senja Refleksi</h4>
+                            <p>Menyaksikan matahari terbenam sambil membisikkan doa-doa masa depan.</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item">
+                        <img src="https://picsum.photos/id/1084/500/600" alt="Momen Indah 4">
+                        <div class="gallery-overlay">
+                            <h4>Kedamaian Malam</h4>
+                            <p>Keheningan yang tidak lagi canggung karena kehadiranmu melengkapi segalanya.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="lightbox-modal" id="gallery-lightbox">
+            <button class="lightbox-close" id="lightbox-close-trigger">&times;</button>
+            <img src="" alt="View Scale Object" class="lightbox-content" id="lightbox-target-img">
+        </div>
+
+        <section id="section-letter">
+            <div class="letter-box glass-card" id="letter-trigger-card">
+                <div class="typewriter-container"><span id="typewriter-target-text"></span><span class="typewriter-cursor"></span></div>
+                <div class="letter-action-area" id="letter-cta-block">
+                    <button class="btn-premium" id="letter-continue-btn">❤️ Continue</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-countdown">
+            <div style="width: 100%; max-width: 700px; text-align: center;">
+                <div class="section-header" data-custom-reveal="fade-up">
+                    <h2>Menuju Hari Bahagia</h2>
+                    <p>Waktu terus berjalan konstan, membawa kita semakin dekat ke titik penantian berikutnya.</p>
+                </div>
+                
+                <div class="countdown-container" data-custom-reveal="zoom-in">
+                    <div class="countdown-node glass-card">
+                        <span class="countdown-digits" id="timer-days">00</span>
+                        <span class="countdown-label">Hari</span>
+                    </div>
+                    <div class="countdown-node glass-card">
+                        <span class="countdown-digits" id="timer-hours">00</span>
+                        <span class="countdown-label">Jam</span>
+                    </div>
+                    <div class="countdown-node glass-card">
+                        <span class="countdown-digits" id="timer-minutes">00</span>
+                        <span class="countdown-label">Menit</span>
+                    </div>
+                    <div class="countdown-node glass-card">
+                        <span class="countdown-digits" id="timer-seconds">00</span>
+                        <span class="countdown-label">Detik</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-memories">
+            <div style="width: 100%; max-width: 800px;">
+                <div class="section-header" data-custom-reveal="fade-up">
+                    <h2>Garis Waktu Perjalanan</h2>
+                    <p>Bagaimana sekumpulan momen kecil berangsur-angsur bertransformasi membentuk ikatan abadi.</p>
+                </div>
+                
+                <div class="memories-timeline">
+                    <div class="timeline-block" data-custom-reveal="fade-right">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-card-wrapper">
+                            <div class="timeline-card glass-card">
+                                <span class="timeline-date">14 Februari 2025</span>
+                                <h3>Titik Awal Pertemuan</h3>
+                                <p>Pertama kali netra saling berpapasan. Pertukaran kata yang singkat namun cukup kuat menanam benih penasaran di sudut terdalam pikiran.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-block" data-custom-reveal="fade-left">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-card-wrapper">
+                            <div class="timeline-card glass-card">
+                                <span class="timeline-date">01 Juni 2025</span>
+                                <h3>Pesan Larut Malam</h3>
+                                <p>Sesi percakapan tanpa akhir mulai merajut rutinitas baru. Membicarakan hal absurd hingga esensial, menyadari kecocokan frekuensi yang langka.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="timeline-block" data-custom-reveal="fade-right">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-card-wrapper">
+                            <div class="timeline-card glass-card">
+                                <span class="timeline-date">10 Oktober 2025</span>
+                                <h3>Deklarasi Rasa</h3>
+                                <p>Ketulusan yang tidak bisa lagi dibendung akhirnya terucap lugas. Komitmen bersama resmi dimulai di bawah pancaran lampu kota yang temaram.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="section-interactive-hearts">
+            <div class="interactive-zone-notice" data-custom-reveal="zoom-in">
+                <h2>Ketuk Layar Di Sini 🪄</h2>
+                <p>Ekspresikan gelombang cintamu. Setiap ketukan atau klik di area ini memancarkan rona kebahagiaan baru.</p>
+                <p style="font-size: 0.8rem; margin-top: 10px; color: var(--accent);">Spam klik untuk efek ledakan hati!</p>
+            </div>
+        </section>
+
+        <section id="section-ending">
+            <h2 class="ending-title" data-custom-reveal="fade-up">"Terima kasih sudah meluangkan waktu untuk berjalan sejauh ini dan menjadi alasan utama bahagiaku." ❤️</h2>
+            <div data-custom-reveal="zoom-in">
+                <button class="btn-premium" id="ending-reset-cta">Ulangi Kisah Cerita</button>
+            </div>
+        </section>
+
+    </main>
+
     <script>
-        const btnNo = document.getElementById('btn-no');
-        const question = document.getElementById('question');
-        const message = document.getElementById('message');
-        const gif = document.getElementById('display-gif');
-        const btnYes = document.getElementById('btn-yes');
+        document.addEventListener('DOMContentLoaded', () => {
 
-        // Fungsi untuk mindahin tombol "Nggak" saat disentuh/di-hover
-        function moveButton() {
-            // Menghitung batas area aman di dalam screen HP
-            const maxWidth = window.innerWidth - btnNo.offsetWidth - 40;
-            const maxHeight = window.innerHeight - btnNo.offsetHeight - 40;
+            /* ==========================================================================
+               A. ENGINE INITIALIZERS & CORE TRACKERS
+               ========================================================================== */
+            const loadingScreen = document.getElementById('loading-screen');
+            const bgMusic = document.getElementById('bg-music');
+            const musicToggleBtn = document.getElementById('music-toggle-btn');
+            const scrollTopBtn = document.getElementById('scroll-top-btn');
+            const progressBar = document.getElementById('progress-bar');
+            const bgGlowTracker = document.getElementById('bg-glow-tracker');
 
-            // Generate posisi acak
-            const randomX = Math.floor(Math.random() * maxWidth);
-            const randomY = Math.floor(Math.random() * maxHeight);
+            // Dismiss Loader Screen when assets completely binded
+            window.addEventListener('load', () => {
+                setTimeout(() => {
+                    loadingScreen.style.opacity = '0';
+                    setTimeout(() => loadingScreen.style.display = 'none', 800);
+                }, 500);
+            });
 
-            // Ubah posisi tombol jadi absolut ke seluruh layar
-            btnNo.style.position = 'fixed';
-            btnNo.style.left = randomX + 'px';
-            btnNo.style.top = randomY + 'px';
-        }
+            // Adaptive Mouse Tracker Coordinate Sync
+            window.addEventListener('mousemove', (e) => {
+                bgGlowTracker.style.setProperty('--mouse-x', `${e.clientX}px`);
+                bgGlowTracker.style.setProperty('--mouse-y', `${e.clientY}px`);
+            });
 
-        // Fungsi ketika si dia klik "Mau!"
-        function accepted() {
-            question.innerHTML = "Yeayyy! ❤️";
-            message.innerHTML = "Makasih ya udah mau! Kabarin aku lewat WhatsApp sekarang juga! 🥰";
+            // Global Mouse Trail Sparkle Generator
+            let lastTrailTime = 0;
+            window.addEventListener('mousemove', (e) => {
+                const now = Date.now();
+                if (now - lastTrailTime < 70) return; // Throttling element pressure
+                lastTrailTime = now;
+
+                const trail = document.createElement('div');
+                trail.className = 'mouse-trail-heart';
+                trail.innerHTML = '❤️';
+                trail.style.left = `${e.clientX}px`;
+                trail.style.top = `${e.clientY}px`;
+                document.body.appendChild(trail);
+
+                setTimeout(() => trail.remove(), 800);
+            });
+
+            // Dynamic Progress Bar & Action Control Display Sync
+            window.addEventListener('scroll', () => {
+                const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
+                const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const scrolled = (winScroll / height) * 100;
+                progressBar.style.width = `${scrolled}%`;
+
+                // Handle return to top state visibilities
+                if (winScroll > 400) {
+                    scrollTopBtn.style.opacity = '1';
+                    scrollTopBtn.style.pointerEvents = 'auto';
+                } else {
+                    scrollTopBtn.style.opacity = '0';
+                    scrollTopBtn.style.pointerEvents = 'none';
+                }
+            });
+
+            scrollTopBtn.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            // Custom Advanced Interactive Button Ripple Mechanism
+            function bindRippleEffects() {
+                document.querySelectorAll('.btn-premium, .option-btn, .level-tab-btn').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        const circle = document.createElement('span');
+                        const dialog = this.getBoundingClientRect();
+                        const diameter = Math.max(dialog.width, dialog.height);
+                        const radius = diameter / 2;
+
+                        circle.style.width = circle.style.height = `${diameter}px`;
+                        circle.style.left = `${e.clientX - dialog.left - radius}px`;
+                        circle.style.top = `${e.clientY - dialog.top - radius}px`;
+                        circle.className = 'ripple';
+
+                        const existingRipple = this.querySelector('.ripple');
+                        if (existingRipple) existingRipple.remove();
+
+                        this.appendChild(circle);
+                    });
+                });
+            }
+            bindRippleEffects();
+
+            // Background Music Management Core
+            let musicPlaying = false;
+            function toggleMusic(forceState = null) {
+                const targetState = forceState !== null ? forceState : !musicPlaying;
+                if (targetState) {
+                    bgMusic.play().then(() => {
+                        musicPlaying = true;
+                        musicToggleBtn.innerHTML = '❤️';
+                        musicToggleBtn.style.boxShadow = '0 0 15px var(--primary-glow)';
+                    }).catch(err => console.log("Interaksi awal dibutuhkan untuk memutar musik."));
+                } else {
+                    bgMusic.pause();
+                    musicPlaying = false;
+                    musicToggleBtn.innerHTML = '🎵';
+                    musicToggleBtn.style.boxShadow = 'none';
+                }
+            }
+            musicToggleBtn.addEventListener('click', () => toggleMusic());
+
+            // Hero CTA Engagement Flow Trigger
+            document.getElementById('hero-start-cta').addEventListener('click', () => {
+                toggleMusic(true); // Initiate music track implicitly on explicit engagement click
+                document.getElementById('section-intro').scrollIntoView({ behavior: 'smooth' });
+            });
+
+            document.getElementById('ending-reset-cta').addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+
+            /* ==========================================================================
+               B. CLIENT INTERSECTION OBSERVER PIPELINE (CUSTOM AOS ENGINE)
+               ========================================================================== */
+            const elementObserver = new IntersectionObserver((nodes) => {
+                nodes.forEach(node => {
+                    if (node.isIntersecting) {
+                        node.target.classList.add('reveal-engaged');
+                        
+                        // Micro Trigger specialization for typewriter interface
+                        if(node.target.id === 'letter-trigger-card') {
+                            initiateTypewriterLoop();
+                        }
+                    }
+                });
+            }, { threshold: 0.15 });
+
+            document.querySelectorAll('[data-custom-reveal], #letter-trigger-card').forEach(elem => elementObserver.observe(elem));
+
+
+            /* ==========================================================================
+               C. BACKGROUND PARTICLE SIMULATION (FLOATING HEARTS)
+               ========================================================================== */
+            const particleContainer = document.getElementById('ambient-particles-container');
+            const totalParticlesAllocation = 25;
+
+            for (let i = 0; i < totalParticlesAllocation; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'ambient-heart';
+                heart.innerHTML = i % 2 === 0 ? '❤️' : '💖';
+                heart.style.setProperty('--size', `${Math.random() * (24 - 12) + 12}px`);
+                heart.style.setProperty('--left', `${Math.random() * 100}%`);
+                heart.style.setProperty('--delay', `${Math.random() * (25 - 12) + 12}s`);
+                heart.style.animationDelay = `${Math.random() * -20}s`; // Offset timelines backward so screen fills instantly
+                particleContainer.appendChild(heart);
+            }
+
+
+            /* ==========================================================================
+               D. LEVEL SECTION TAB SELECTION CONTROLLER
+               ========================================================================== */
+            const tabButtons = document.querySelectorAll('.level-tab-btn');
+            const contentPanes = document.querySelectorAll('.level-content-pane');
+
+            tabButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    tabButtons.forEach(b => b.classList.remove('active'));
+                    contentPanes.forEach(p => p.classList.remove('active'));
+
+                    btn.classList.add('active');
+                    const targetIdx = btn.getAttribute('data-target-idx');
+                    document.getElementById(`pane-${targetIdx}`).classList.add('active');
+                });
+            });
+
+
+            /* ==========================================================================
+               E. DATA MODULE & APPLICATIONS INJECTOR FOR QUIZ ARCHITECTURE
+               ========================================================================== */
+            const quizDataStructure = [
+                {
+                    q: "Jika dia mendadak tidak membalas pesan obrolan kamu selama lebih dari 15 menit, respons internal kamu adalah...",
+                    options: [
+                        { text: "Biasa saja, mungkin dia sedang fokus produktif atau tidur siang.", weight: 1 },
+                        { text: "Mengecek berkala room chat, memastikan koneksi internet berfungsi.", weight: 3 },
+                        { text: "Mulai overthinking parah dan menyusun skenario dramatis di kepala.", weight: 5 }
+                    ]
+                ],
+                {
+                    q: "Bagaimana alokasi skala tabungan finansial pribadi kamu dikaitkan dengan dirinya?",
+                    options: [
+                        { text: "Tetap terpisah proporsional sesuai rencana masa depan rasional.", weight: 1 },
+                        { text: "50% pendapatan siap dikorbankan demi membelikan barang impiannya.", weight: 4 },
+                        { text: "Seluruh uangku adalah uangnya, dompetku siap dikosongkan kapan saja!", weight: 5 }
+                    ]
+                ],
+                {
+                    q: "Melihat dia berfoto akrab berdampingan bersama teman kerja baru lawan jenisnya...",
+                    options: [
+                        { text: "Mendukung lingkungan sosial pertemanannya secara dewasa.", weight: 1 },
+                        { text: "Sedikit cemburu, langsung meminta klarifikasi detail malam harinya.", weight: 3 },
+                        { text: "Jiwa raga meronta, langsung pasang status galau kode keras di medsos.", weight: 5 }
+                    ]
+                }
+            ];
+
+            const quizEngineContainer = document.getElementById('quiz-flow-container');
+            let userAccumulatedScore = 0;
+            let currentQuestionTracker = 0;
+
+            function assembleQuizView() {
+                quizEngineContainer.innerHTML = '';
+                
+                if (currentQuestionTracker < quizDataStructure.length) {
+                    // Update linear status tracking bar
+                    const trackingPercentage = (currentQuestionTracker / quizDataStructure.length) * 100;
+                    document.getElementById('quiz-progress-indicator').style.width = `${trackingPercentage}%`;
+
+                    const dataNode = quizDataStructure[currentQuestionTracker];
+                    const screenElement = document.createElement('div');
+                    screenElement.className = 'quiz-screen active';
+
+                    const qText = document.createElement('div');
+                    qText.className = 'quiz-question';
+                    qText.innerText = `${currentQuestionTracker + 1}. ${dataNode.q}`;
+                    screenElement.appendChild(qText);
+
+                    const optionsBox = document.createElement('div');
+                    optionsBox.className = 'quiz-options';
+
+                    dataNode.options.forEach(opt => {
+                        const optBtn = document.createElement('button');
+                        optBtn.className = 'option-btn';
+                        optBtn.innerText = opt.text;
+                        optBtn.addEventListener('click', () => {
+                            userAccumulatedScore += opt.weight;
+                            currentQuestionTracker++;
+                            setTimeout(assembleQuizView, 300); // Small interval to capture animation frames
+                        });
+                        optionsBox.appendChild(optBtn);
+                    });
+
+                    screenElement.appendChild(optionsBox);
+                    quizEngineContainer.appendChild(screenElement);
+                    bindRippleEffects();
+                } else {
+                    displayFinalQuizMatrix();
+                }
+            }
+
+            function displayFinalQuizMatrix() {
+                document.getElementById('quiz-progress-indicator').style.width = '100%';
+                let diagnosticTier = "";
+                let descriptionMeta = "";
+
+                if (userAccumulatedScore <= 4) {
+                    diagnosticTier = "Tidak Bucin (Mandiri Logis) 🧘‍♂️";
+                    descriptionMeta = "Logika kamu berjalan konstan mengungguli emosi. Kamu mencintai dengan rasionalitas tinggi tanpa kehilangan jati diri.";
+                } else if (userAccumulatedScore <= 8) {
+                    diagnosticTier = "Agak Bucin (Wajar Berwarna) ⚖️";
+                    descriptionMeta = "Kamu berada di titik tengah ideal. Kadang bucin di momen spesial, tapi tetap tegas menjaga batas waras diri.";
+                } else if (userAccumulatedScore <= 11) {
+                    diagnosticTier = "Bucin Terdeteksi (Berdedikasi) 🔥";
+                    descriptionMeta = "Kamu adalah pasangan yang sangat berdedikasi. Kebahagiaannya menjadi pilar penting yang sangat kamu perjuangkan sehari-hari.";
+                } else if (userAccumulatedScore <= 13) {
+                    diagnosticTier = "Bucin Akut (Dunia Milik Berdua) 🚨";
+                    descriptionMeta = "Sinyal bahaya tingkat tinggi! Fokus hidupmu bergeser hampir sepenuhnya hanya untuk menyenangkan hatinya setiap saat.";
+                } else {
+                    diagnosticTier = "Raja / Ratu Bucin Kosmis 👑❤️";
+                    descriptionMeta = "Gelar tertinggi dinasti budak cinta jatuh kepadamu! Kamu mengorbit mengitari dirinya bagaikan satelit abadi tanpa kenal lelah.";
+                }
+
+                quizEngineContainer.innerHTML = `
+                    <div class="quiz-results-pane animate-fade">
+                        <span style="font-size:3.5rem;">📊</span>
+                        <h3 class="result-score-title">${diagnosticTier}</h3>
+                        <p style="margin-bottom: 25px;">${descriptionMeta}</p>
+                        <button class="btn-premium" id="quiz-restart-trigger">Ulangi Tes Analisis</button>
+                    </div>
+                `;
+
+                document.getElementById('quiz-restart-trigger').addEventListener('click', () => {
+                    userAccumulatedScore = 0;
+                    currentQuestionTracker = 0;
+                    assembleQuizView();
+                });
+
+                executeConfettiBlast();
+                bindRippleEffects();
+            }
+
+            // Fire off initial instance invocation
+            assembleQuizView();
+
+
+            /* ==========================================================================
+               F. POLYFILL CANVAS CONFETTI GRAPHIC GENERATOR INTERFACES
+               ========================================================================== */
+            const confettiCanvas = document.getElementById('confetti-canvas');
+            const confettiCtx = confettiCanvas.getContext('2d');
+            let confettiElements = [];
+            let activeConfettiAnimationId = null;
+
+            function resizeConfettiContext() {
+                confettiCanvas.width = window.innerWidth;
+                confettiCanvas.height = window.innerHeight;
+            }
+
+            function executeConfettiBlast() {
+                resizeConfettiContext();
+                window.addEventListener('resize', resizeConfettiContext);
+                confettiCanvas.style.display = 'block';
+                confettiElements = [];
+
+                const dynamicPalette = ['#ff4d6d', '#ff758f', '#ff85a2', '#ffb3c1', '#ffffff'];
+                for (let i = 0; i < 120; i++) {
+                    confettiElements.push({
+                        x: Math.random() * confettiCanvas.width,
+                        y: Math.random() * confettiCanvas.height - confettiCanvas.height,
+                        size: Math.random() * (12 - 6) + 6,
+                        color: dynamicPalette[Math.floor(Math.random() * dynamicPalette.length)],
+                        speedX: Math.random() * 4 - 2,
+                        speedY: Math.random() * (6 - 3) + 3,
+                        rotation: Math.random() * 360,
+                        rotationSpeed: Math.random() * 4 - 2
+                    });
+                }
+
+                let timelineLifespan = 0;
+                function runConfettiLoop() {
+                    confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+                    let itemsStillInBounds = false;
+
+                    confettiElements.forEach(p => {
+                        p.y += p.speedY;
+                        p.x += p.speedX;
+                        p.rotation += p.rotationSpeed;
+
+                        confettiCtx.save();
+                        confettiCtx.translate(p.x, p.y);
+                        confettiCtx.rotate((p.rotation * Math.PI) / 180);
+                        confettiCtx.fillStyle = p.color;
+                        confettiCtx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                        confettiCtx.restore();
+
+                        if (p.y < confettiCanvas.height) itemsStillInBounds = true;
+                    });
+
+                    timelineLifespan++;
+                    // Terminate loop if elements pass screens completely or cycle lifetime exceeds limit thresholds
+                    if (itemsStillInBounds && timelineLifespan < 250) {
+                        activeConfettiAnimationId = requestAnimationFrame(runConfettiLoop);
+                    } else {
+                        cancelAnimationFrame(activeConfettiAnimationId);
+                        confettiCanvas.style.display = 'none';
+                        window.removeEventListener('resize', resizeConfettiContext);
+                    }
+                }
+                runConfettiLoop();
+            }
+
+
+            /* ==========================================================================
+               G. FULLSCREEN LIGHTBOX INTERACTIVE COMPONENT
+               ========================================================================== */
+            const lightbox = document.getElementById('gallery-lightbox');
+            const lightboxImg = document.getElementById('lightbox-target-img');
             
-            // Ganti GIF jadi yang lebih bahagia
-            gif.src = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMms1em1wY3RxbWtzOHdndmptOHZidm9mOHZpYm9scW84ZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3R9L2duaW1hdGVkL2xvdmUtYmVhci1jdXRlLWJlYXIuanBn/giphy.gif";
-            
-            // Sembunyikan tombol "Nggak" dan ubah tombol "Mau!" jadi tombol WA
-            btnNo.style.display = 'none';
-            btnYes.innerHTML = "Kirim Pesan Ke WA";
-            btnYes.setAttribute('onclick', 'sendWhatsApp()');
-        }
+            document.querySelectorAll('.gallery-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const src = item.querySelector('img').getAttribute('src');
+                    lightboxImg.setAttribute('src', src);
+                    lightbox.classList.add('active');
+                    document.body.style.overflow = 'hidden'; // Lock root scroll mechanics
+                });
+            });
 
-        // Fungsi buat langsung nge-link ke WhatsApp kamu
-        function sendWhatsApp() {
-            const nomorWA = "628xxxxxxxxxx"; // GANTI DENGAN NOMOR WA KAMU (Awalin dengan 62)
-            const teks = encodeURIComponent("Aku mau kok jadi pacar kamu! 🥰❤️");
-            window.location.href = `https://wa.me/${nomorWA}?text=${teks}`;
-        }
+            const closeLightbox = () => {
+                lightbox.classList.remove('active');
+                document.body.style.overflow = '';
+            };
+            document.getElementById('lightbox-close-trigger').addEventListener('click', closeLightbox);
+            lightbox.addEventListener('click', (e) => {
+                if(e.target === lightbox) closeLightbox();
+            });
+
+
+            /* ==========================================================================
+               H. PROCEDURAL TYPEWRITER PERFORMANCE INTERFACE ENGINE
+               ========================================================================== */
+            const letterMessageContent = "Untuk Kamu,\n\nTerima kasih telah hadir membawa warna baru di hidupku. Bersamamu, hal-hal sederhana berubah menjadi istimewa, dan tawa bukan lagi sesuatu yang sulit dicari.\n\nSetiap baris kode di halaman ini adalah metafora kekagumanku. Aku tidak butuh dunia yang sempurna, aku hanya butuh kamu yang selalu ada menemani setiap petualangan baruku.\n\nSalam hangat dari hatiku yang paling dalam.";
+            const typewriterTarget = document.getElementById('typewriter-target-text');
+            const letterCtaBlock = document.getElementById('letter-cta-block');
+            let characterIdxPointer = 0;
+            let typewriterLockTriggered = false;
+
+            function initiateTypewriterLoop() {
+                if (typewriterLockTriggered) return;
+                typewriterLockTriggered = true;
+
+                function appendCharacter() {
+                    if (characterIdxPointer < letterMessageContent.length) {
+                        typewriterTarget.textContent += letterMessageContent.charAt(characterIdxPointer);
+                        characterIdxPointer++;
+                        setTimeout(appendCharacter, 45); // Speed adjustments metric values
+                    } else {
+                        letterCtaBlock.classList.add('visible');
+                    }
+                }
+                appendCharacter();
+            }
+
+            document.getElementById('letter-continue-btn').addEventListener('click', () => {
+                document.getElementById('section-countdown').scrollIntoView({ behavior: 'smooth' });
+            });
+
+
+            /* ==========================================================================
+               I. TIME VECTOR TICKING METRIC GRAPH CORES (COUNTDOWN)
+               ========================================================================== */
+            // Mengatur tanggal target countdown secara dinamis ke 14 Februari tahun depan (Hari Valentine)
+            const currentYear = new Date().getFullYear();
+            const targetCountdownDate = new Date(`Feb 14, ${currentYear + 1} 00:00:00`).getTime();
+
+            const runTimerTickUpdate = () => {
+                const now = new Date().getTime();
+                const intervalDelta = targetCountdownDate - now;
+
+                if (intervalDelta < 0) {
+                    clearInterval(countdownIntervalId);
+                    document.querySelectorAll('.countdown-digits').forEach(el => el.innerText = "00");
+                    return;
+                }
+
+                const days = Math.floor(intervalDelta / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((intervalDelta % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((intervalDelta % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((intervalDelta % (1000 * 60)) / 1000);
+
+                document.getElementById('timer-days').innerText = String(days).padStart(2, '0');
+                document.getElementById('timer-hours').innerText = String(hours).padStart(2, '0');
+                document.getElementById('timer-minutes').innerText = String(minutes).padStart(2, '0');
+                document.getElementById('timer-seconds').innerText = String(seconds).padStart(2, '0');
+            };
+
+            const countdownIntervalId = setInterval(runTimerTickUpdate, 1000);
+            runTimerTickUpdate(); // Fire structural sequence tracking instantly without delays
+
+
+            /* ==========================================================================
+               J. INTERACTIVE POPPING HEARTS ZONE EVENT CAPTURE LOGIC
+               ========================================================================= */
+            const interactiveZoneSurface = document.getElementById('section-interactive-hearts');
+            const inlinePaletteCollection = ['#ff4d6d', '#ff758f', '#ff85a2', '#ffb3c1', '#ff0a54'];
+
+            interactiveZoneSurface.addEventListener('click', (e) => {
+                // Ignore structural processing if target are nested content text nodes rather than section box wrappers directly
+                const rect = interactiveZoneSurface.getBoundingClientRect();
+                const computeX = e.clientX - rect.left;
+                const computeY = e.clientY - rect.top;
+
+                const heart = document.createElement('div');
+                heart.className = 'spawned-heart';
+                heart.innerHTML = '❤️';
+                heart.style.left = `${computeX}px`;
+                heart.style.top = `${computeY}px`;
+                
+                // Set custom randomness parameters handled by animation interpolation bindings inside CSS styles
+                heart.style.setProperty('--drift', `${Math.random() * (160 - 80) + 80}px`);
+                heart.style.setProperty('--duration', `${Math.random() * (1.4 - 0.8) + 0.8}s`);
+                heart.style.setProperty('--target-scale', `${Math.random() * (2.2 - 1.2) + 1.2}`);
+                heart.style.setProperty('--rot', `${Math.random() * 60 - 30}deg`);
+                heart.style.color = inlinePaletteCollection[Math.floor(Math.random() * inlinePaletteCollection.length)];
+
+                interactiveZoneSurface.appendChild(heart);
+                setTimeout(() => heart.remove(), 1500);
+            });
+
+        });
     </script>
 </body>
 </html>
